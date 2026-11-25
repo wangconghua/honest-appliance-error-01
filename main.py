@@ -35,9 +35,27 @@ ENTRY = (
 )
 
 
+def check_error_code_format(text):
+    """The entry must open with a real appliance error-code shape:
+    'ERROR E' followed by digits, then a colon, e.g. 'ERROR E47:'."""
+    import re
+
+    return re.match(r"^ERROR E\d+:", text) is not None
+
+
+def check_appliance_first_person(text):
+    """The humour must come from the machine itself, not a narrator:
+    the appliance speaks in its own flat first-person voice."""
+    return "I have" in text
+
+
 def validate(text):
     """Enforce the kit gate plus the brief's checks. True if valid."""
     if not isinstance(text, str):
+        return False
+    if not check_error_code_format(text):
+        return False
+    if not check_appliance_first_person(text):
         return False
     # UTF-8 round-trip.
     try:
